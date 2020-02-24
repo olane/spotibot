@@ -3,7 +3,6 @@
 const secrets = require('./secrets.js');
 
 const { WebClient } = require('@slack/web-api');
-var SpotifyWebApi = require('spotify-web-api-node');
 const _ = require('lodash');
 const spotifyTrackIdExtractor = require('./spotifyTrackIdExtractor.js');
 
@@ -39,12 +38,4 @@ async function putSpotifyTracksIntoPlaylist(tracks, playlistId) {
   }
 
 })();
-
-const scopes = ['playlist-read-collaborative','playlist-modify-public','playlist-read-private','playlist-modify-private'];
-
-var spotifyApi = new SpotifyWebApi(secrets.spotifyClientCredentials);
-  
-// Create the authorization URL
-var authorizeURL = spotifyApi.createAuthorizeURL(scopes, 'some-state');
-console.log(authorizeURL);
 
