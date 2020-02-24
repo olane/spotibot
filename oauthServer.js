@@ -6,11 +6,17 @@ const SpotifyWebApi = require('spotify-web-api-node');
 const app = express();
 const port = 3000;
 
-app.get('/callback', (req, res) => {
+app.get('/callback', async (req, res) => {
   const code = req.query.code;
   const state = req.query.state;
   console.log('Got authorization code ' + code);
   console.log('Got state ' + state);
+
+  const data = await spotifyApi.authorizationCodeGrant(code);
+
+  console.log('The token expires in ' + data.body['expires_in']);
+  console.log('The access token is ' + data.body['access_token']);
+  console.log('The refresh token is ' + data.body['refresh_token']);
 
   res.send('OK - view log for auth code');
 });

@@ -9,6 +9,6 @@ Run `npm run authorize`
 
 The console will print an auth URL - visit it, and log into your spotify account. Accept the app's access.
 
-Once you do, the callback will hit the app and the app will log out your authorization code.
+Once you do, the callback will hit the app and the app will log out your refresh and access code.
 
-Copy the auth code into secrets.js (`spotifyAuthCode`)
+Copy the refresh token into secrets.js (`spotifyRefreshToken`)
