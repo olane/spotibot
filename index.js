@@ -7,10 +7,17 @@ const _ = require('lodash');
 const spotifyTrackIdExtractor = require('./spotifyTrackIdExtractor.js');
 const SpotifyWebApi = require('spotify-web-api-node');
 
-const spotifyApi = new SpotifyWebApi(secrets.spotifyClientCredentials);
-spotifyApi.setRefreshToken(secrets.spotifyRefreshToken);
-
 const slackClient = new WebClient(secrets.slackBotOauthAccessToken);
+
+async function getSpotifyClient() {
+    const spotifyApi = new SpotifyWebApi(secrets.spotifyClientCredentials);
+    spotifyApi.setRefreshToken(secrets.spotifyRefreshToken);
+    
+    const data = await spotifyApi.refreshAccessToken();
+    spotifyApi.setAccessToken(data.body['access_token']);
+
+    return spotifyApi;
+}
 
 async function getAllSpotifyTracks(slackClient, channelId) {
     let tracks = [];
@@ -28,12 +35,7 @@ async function getAllSpotifyTracks(slackClient, channelId) {
     return tracks;
 }
 
-async function refreshSpotifyAccessToken() {
-    const data = await spotifyApi.refreshAccessToken();
-    spotifyApi.setAccessToken(data.body['access_token']);
-}
-
-async function getSpotifyTracksInPlaylist(playlistId) {
+async function getSpotifyTracksInPlaylist(spotifyApi, playlistId) {
     const playlistTracks = await spotifyApi.getPlaylistTracks(playlistId, {
         fields: 'items'
     });
@@ -41,7 +43,7 @@ async function getSpotifyTracksInPlaylist(playlistId) {
     return playlistTracks.body.items;
 }
 
-async function putSpotifyTracksIntoPlaylist(tracksToAdd, playlistId) {
+async function putSpotifyTracksIntoPlaylist(spotifyApi, tracksToAdd, playlistId) {
     const currentTracks = await getSpotifyTracksInPlaylist(playlistId);
 
     const currentTrackIds = currentTracks.map(x => x.track.id);
@@ -64,9 +66,9 @@ async function putSpotifyTracksIntoPlaylist(tracksToAdd, playlistId) {
 
         console.log(tracks);
 
-        await refreshSpotifyAccessToken();
-        await getSpotifyTracksInPlaylist('4VgNNTXhy73ZCvqT2MthV5');
-        const tracksAdded = await putSpotifyTracksIntoPlaylist(tracks, '4VgNNTXhy73ZCvqT2MthV5');
+        const spotifyApi = await getSpotifyClient();
+        await getSpotifyTracksInPlaylist(spotifyApi, '4VgNNTXhy73ZCvqT2MthV5');
+        const tracksAdded = await putSpotifyTracksIntoPlaylist(spotifyApi, tracks, '4VgNNTXhy73ZCvqT2MthV5');
 
         console.log('Success! Added ' + tracksAdded + ' tracks');
 
