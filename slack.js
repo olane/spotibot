@@ -32,7 +32,11 @@ async function getAllSpotifyTracksFromSlack(slackClient, channelId, pageLimit = 
         }
     }
 
-    return _.uniqBy(tracks, x => x.trackId);
+    const uniqueTracks = _.uniqBy(tracks, x => x.trackId);
+
+    const sortedUniqueTracks = _.sortBy(uniqueTracks, x => x.timestamp);
+
+    return sortedUniqueTracks;
 }
 
 module.exports = {

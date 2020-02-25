@@ -11,7 +11,7 @@ async function delay(milliseconds) {
 async function shovelTracks() {
     try {
         const slackApi = slack.getSlackClient(secrets);
-        const tracks = await slack.getAllSpotifyTracksFromSlack(slackApi, secrets.spotifyChannelName, 1);
+        const tracks = await slack.getAllSpotifyTracksFromSlack(slackApi, secrets.spotifyChannelName);
         console.log("Got " + tracks.length + " tracks from slack, total");
 
         const spotifyApi = await spotify.getSpotifyClient(secrets);
