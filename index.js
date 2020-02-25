@@ -49,7 +49,7 @@ async function getSpotifyTracksInPlaylist(spotifyApi, playlistId) {
 }
 
 async function putSpotifyTracksIntoPlaylist(spotifyApi, tracksToAdd, playlistId) {
-    const currentTracks = await getSpotifyTracksInPlaylist(playlistId);
+    const currentTracks = await getSpotifyTracksInPlaylist(spotifyApi, playlistId);
 
     const currentTrackIds = currentTracks.map(x => x.track.id);
     const trackIdsBeingAdded = tracksToAdd.map(x => x.trackId);
@@ -73,7 +73,6 @@ async function putSpotifyTracksIntoPlaylist(spotifyApi, tracksToAdd, playlistId)
         console.log(tracks);
 
         const spotifyApi = await getSpotifyClient();
-        await getSpotifyTracksInPlaylist(spotifyApi, '4VgNNTXhy73ZCvqT2MthV5');
         const tracksAdded = await putSpotifyTracksIntoPlaylist(spotifyApi, tracks, '4VgNNTXhy73ZCvqT2MthV5');
 
         console.log('Success! Added ' + tracksAdded + ' tracks');
