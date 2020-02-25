@@ -28,11 +28,33 @@ async function getAllSpotifyTracks(slackClient, channelId) {
     return tracks;
 }
 
-async function putSpotifyTracksIntoPlaylist(tracks, playlistId) {
+async function refreshSpotifyAccessToken() {
   const data = await spotifyApi.refreshAccessToken();
   spotifyApi.setAccessToken(data.body['access_token']);
+}
 
-  return spotifyApi.addTracksToPlaylist(playlistId, tracks.map(x => 'spotify:track:' + x.trackId));
+async function getSpotifyTracksInPlaylist(playlistId) {
+  const playlistTracks = await spotifyApi.getPlaylistTracks(playlistId, {
+    fields: 'items'
+  });
+
+  return playlistTracks.body.items;
+}
+
+async function putSpotifyTracksIntoPlaylist(tracksToAdd, playlistId) {
+  const currentTracks = await getSpotifyTracksInPlaylist(playlistId);
+
+  const currentTrackIds = currentTracks.map(x => x.track.id);
+  const trackIdsBeingAdded = tracksToAdd.map(x => x.trackId);
+
+  const newTracksToAdd = _.difference(trackIdsBeingAdded, currentTrackIds);
+
+  if (newTracksToAdd.length === 0) {
+    return 0;
+  }
+
+  await spotifyApi.addTracksToPlaylist(playlistId, newTracksToAdd.map(x => 'spotify:track:' + x));
+  return newTracksToAdd.length;
 }
 
 (async () => {
@@ -42,9 +64,11 @@ async function putSpotifyTracksIntoPlaylist(tracks, playlistId) {
 
     console.log(tracks);
 
-    await putSpotifyTracksIntoPlaylist(tracks, '4VgNNTXhy73ZCvqT2MthV5');
+    await refreshSpotifyAccessToken();
+    await getSpotifyTracksInPlaylist('4VgNNTXhy73ZCvqT2MthV5');
+    const tracksAdded = await putSpotifyTracksIntoPlaylist(tracks, '4VgNNTXhy73ZCvqT2MthV5');
 
-    console.log('Success! Added ' + tracks.length + ' tracks');
+    console.log('Success! Added ' + tracksAdded + ' tracks');
 
   } catch (error) {
     console.log(error);
