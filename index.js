@@ -7,7 +7,6 @@ const _ = require('lodash');
 const spotifyTrackIdExtractor = require('./spotifyTrackIdExtractor.js');
 const SpotifyWebApi = require('spotify-web-api-node');
 
-const slackClient = new WebClient(secrets.slackBotOauthAccessToken);
 
 async function getSpotifyClient() {
     const spotifyApi = new SpotifyWebApi(secrets.spotifyClientCredentials);
@@ -19,7 +18,13 @@ async function getSpotifyClient() {
     return spotifyApi;
 }
 
-async function getAllSpotifyTracks(slackClient, channelId) {
+function getSlackClient() {
+    const slackClient = new WebClient(secrets.slackBotOauthAccessToken);
+
+    return slackClient;
+}
+
+async function getAllSpotifyTracksFromSlack(slackClient, channelId) {
     let tracks = [];
 
     for await (const page of slackClient.paginate('conversations.history', { channel: channelId })) {
@@ -62,7 +67,8 @@ async function putSpotifyTracksIntoPlaylist(spotifyApi, tracksToAdd, playlistId)
 (async () => {
 
     try {
-        const tracks = await getAllSpotifyTracks(slackClient, secrets.spotifyChannelName);
+        const slackApi = getSlackClient();
+        const tracks = await getAllSpotifyTracksFromSlack(slackApi, secrets.spotifyChannelName);
 
         console.log(tracks);
 
