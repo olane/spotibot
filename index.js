@@ -70,8 +70,6 @@ async function putSpotifyTracksIntoPlaylist(spotifyApi, tracksToAdd, playlistId)
         const slackApi = getSlackClient();
         const tracks = await getAllSpotifyTracksFromSlack(slackApi, secrets.spotifyChannelName);
 
-        console.log(tracks);
-
         const spotifyApi = await getSpotifyClient();
         const tracksAdded = await putSpotifyTracksIntoPlaylist(spotifyApi, tracks, '4VgNNTXhy73ZCvqT2MthV5');
 
