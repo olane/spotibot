@@ -37,7 +37,7 @@ async function getAllSpotifyTracksFromSlack(slackClient, channelId) {
         tracks.push(...theseTracks);
     }
 
-    return tracks;
+    return _.uniqBy(tracks, x => x.trackId);
 }
 
 async function getSpotifyTracksInPlaylist(spotifyApi, playlistId) {
