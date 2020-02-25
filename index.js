@@ -4,7 +4,11 @@ const secrets = require('./secrets');
 const spotify = require('./spotify');
 const slack = require('./slack');
 
-(async () => {
+async function delay(milliseconds) {
+    return new Promise(resolve => setTimeout(resolve, milliseconds));
+}
+
+async function shovelTracks() {
     try {
         const slackApi = slack.getSlackClient(secrets);
         const tracks = await slack.getAllSpotifyTracksFromSlack(slackApi, secrets.spotifyChannelName, 1);
@@ -16,4 +20,20 @@ const slack = require('./slack');
     } catch (error) {
         console.log(error);
     }
-})();
+}
+
+async function shovelTracksRepeatedly() {
+    while (true) {
+        await shovelTracks();
+        console.log("Waiting 5 minutes...");
+        await delay(1000 * 60 * 5);
+    }
+}
+
+if (process.argv[2] === 'daemon') {
+    shovelTracksRepeatedly();
+}
+else {
+    shovelTracks();
+}
+
