@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "start-daemon": "node index.js daemon",
+    "once": "node index.js",
+    "daemon": "node index.js daemon",
     "authorize": "node oauthServer.js",
     "test": "jest"
   },
