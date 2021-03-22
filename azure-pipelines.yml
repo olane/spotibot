@@ -32,7 +32,7 @@ stages:
     steps:
     - script: echo Testing UI!
 - stage: Deploy
-  dependsOn: [Test, TestUI]
+  dependsOn: [Test, TestUI, Build]
   jobs:
   - job: Deploy
     steps:
