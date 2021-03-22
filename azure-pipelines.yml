@@ -37,4 +37,10 @@ stages:
   - job: Deploy
     steps:
     - script: echo Deploying the code!
+- stage: Deploy2
+  dependsOn: [Test, TestUI]
+  jobs:
+  - job: Deploy
+    steps:
+    - script: echo Deploying the code!
 
