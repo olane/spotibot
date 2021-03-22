@@ -16,6 +16,7 @@ stages:
     steps:
     - script: echo Building!
 - stage: Test
+  dependsOn: [Build]
   jobs:
   - job: TestOnWindows
     steps:
@@ -23,7 +24,15 @@ stages:
   - job: TestOnLinux
     steps:
     - script: echo Testing on Linux!
+- stage: TestUI
+  displayName: Test UI
+  dependsOn: [Build]
+  jobs:
+  - job: TestUIJob
+    steps:
+    - script: echo Testing UI!
 - stage: Deploy
+  dependsOn: [Test, TestUI]
   jobs:
   - job: Deploy
     steps:
