@@ -16,7 +16,8 @@ async function getSpotifyTracksInPlaylist(spotifyApi, playlistId) {
     do { 
         const playlistTracksResponse = await spotifyApi.getPlaylistTracks(playlistId, {
             limit: limit,
-            offset: offset
+            offset: offset,
+            market: 'GB'
         });
 
         offset = playlistTracksResponse.body.offset + playlistTracksResponse.body.limit;
@@ -46,13 +47,15 @@ async function putSpotifyTracksIntoPlaylist(spotifyApi, tracksToAdd, playlistId)
 
     const trackIdsBeingAdded = tracksToAdd.map(x => x.trackId);
 
-    const newTracksToAdd = _.difference(_.difference(trackIdsBeingAdded, currentTrackIds), currentLinkedFromTrackIds);
+    const newTrackIdsToAdd = _.difference(_.difference(trackIdsBeingAdded, currentTrackIds), currentLinkedFromTrackIds);
 
-    if (newTracksToAdd.length === 0) {
+    if (newTrackIdsToAdd.length === 0) {
         return 0;
     }
 
-    const chunked = _.chunk(newTracksToAdd, 20);
+    console.log('Adding the following tracks:\r\n' + newTrackIdsToAdd.join('\r\n'));
+
+    const chunked = _.chunk(newTrackIdsToAdd, 20);
 
     for (const chunk of chunked) {
         await spotifyApi.addTracksToPlaylist(playlistId, chunk.map(x => 'spotify:track:' + x));
@@ -60,7 +63,7 @@ async function putSpotifyTracksIntoPlaylist(spotifyApi, tracksToAdd, playlistId)
         await delay(1000);
     }
 
-    return newTracksToAdd.length;
+    return newTrackIdsToAdd.length;
 }
 
 async function getSpotifyClient(secrets) {
