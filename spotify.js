@@ -34,6 +34,10 @@ async function getSpotifyTracksInPlaylist(spotifyApi, playlistId) {
 }
 
 async function putSpotifyTracksIntoPlaylist(spotifyApi, tracksToAdd, playlistId) {
+    if(!playlistId) {
+        throw new Error('Must provide playlist ID');
+    }
+
     const currentTracks = await getSpotifyTracksInPlaylist(spotifyApi, playlistId);
 
     const currentTrackIds = currentTracks.map(x => x.track.id);
@@ -61,6 +65,11 @@ async function putSpotifyTracksIntoPlaylist(spotifyApi, tracksToAdd, playlistId)
 
 async function getSpotifyClient(secrets) {
     const spotifyApi = new SpotifyWebApi(secrets.spotifyClientCredentials);
+
+    if(!secrets.spotifyRefreshToken) {
+        throw new Error('You must set a spotify refresh token');
+    }
+
     spotifyApi.setRefreshToken(secrets.spotifyRefreshToken);
     
     const data = await spotifyApi.refreshAccessToken();

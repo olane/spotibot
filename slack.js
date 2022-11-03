@@ -15,6 +15,10 @@ async function getAllSpotifyTracksFromSlack(slackClient, channelId, pageLimit = 
 
     let pageCount = 0;
 
+    if(!channelId) {
+        throw new Error('You must provide a slack channel ID to scrape');
+    }
+
     for await (const page of slackClient.paginate('conversations.history', { channel: channelId })) {
         const theseTracks = _.flatten(page.messages.map(message =>
             spotifyTrackIdExtractor.extractTrackIds(message.text).map(trackId => ({

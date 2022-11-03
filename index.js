@@ -11,10 +11,11 @@ async function delay(milliseconds) {
 async function shovelTracks() {
     try {
         const slackApi = slack.getSlackClient(secrets);
+        const spotifyApi = await spotify.getSpotifyClient(secrets);
+
         const tracks = await slack.getAllSpotifyTracksFromSlack(slackApi, secrets.spotifyChannelName);
         console.log("Got " + tracks.length + " tracks from slack, total");
 
-        const spotifyApi = await spotify.getSpotifyClient(secrets);
         const tracksAdded = await spotify.putSpotifyTracksIntoPlaylist(spotifyApi, tracks, '4VgNNTXhy73ZCvqT2MthV5');
         console.log('Success! Added ' + tracksAdded + ' tracks');
     } catch (error) {
