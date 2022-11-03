@@ -8,12 +8,14 @@ async function delay(milliseconds) {
     return new Promise(resolve => setTimeout(resolve, milliseconds));
 }
 
+const slackPageLimit = 10;
+
 async function shovelTracks() {
     try {
         const slackApi = slack.getSlackClient(secrets);
         const spotifyApi = await spotify.getSpotifyClient(secrets);
 
-        const tracks = await slack.getAllSpotifyTracksFromSlack(slackApi, secrets.spotifyChannelName);
+        const tracks = await slack.getAllSpotifyTracksFromSlack(slackApi, secrets.spotifyChannelName, slackPageLimit);
         console.log("Got " + tracks.length + " tracks from slack, total");
 
         const tracksAdded = await spotify.putSpotifyTracksIntoPlaylist(spotifyApi, tracks, '4VgNNTXhy73ZCvqT2MthV5');
